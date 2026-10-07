@@ -1,0 +1,67 @@
+name: AI Sprint Assistant
+description: Reviews pull requests against the linked user story and the team's Definition of Done with Claude
+author: Xavier Roldán
+
+branding:
+  icon: check-square
+  color: green
+
+inputs:
+  anthropic-api-key:
+    description: Anthropic API key (store it as a repository secret). If empty, only the automatic checks run.
+    required: false
+    default: ""
+  github-token:
+    description: Token used to read the pull request and post the review comment
+    required: false
+    default: ${{ github.token }}
+  model:
+    description: Claude model used for the review
+    required: false
+    default: claude-haiku-4-5-20251001
+  dod-path:
+    description: Path to the Definition of Done markdown checklist in the repository
+    required: false
+    default: .github/definition-of-done.md
+  max-diff-chars:
+    description: Maximum diff size sent to the model (controls cost)
+    required: false
+    default: "60000"
+  fail-below-dod:
+    description: Fail the check when the share of DoD items met is below this value (0 to 1, 0 disables)
+    required: false
+    default: "0"
+  require-tests:
+    description: Automatic check - code changes must include test changes
+    required: false
+    default: "true"
+  require-linked-issue:
+    description: Automatic check - the PR must close a user story that has acceptance criteria
+    required: false
+    default: "true"
+  max-changed-lines:
+    description: Automatic check (recommendation) - maximum PR size in changed lines
+    required: false
+    default: "400"
+  fail-on-checks:
+    description: Fail the job when a required automatic check fails
+    required: false
+    default: "false"
+  skip-drafts:
+    description: Do not review draft pull requests
+    required: false
+    default: "true"
+
+outputs:
+  change-type:
+    description: feature, fix, refactor, docs, test or chore
+  dod-met:
+    description: Number of Definition of Done items met
+  dod-total:
+    description: Number of Definition of Done items evaluated
+  checks-passed:
+    description: '"true" when every required automatic check passed'
+
+runs:
+  using: node24
+  main: src/main.js

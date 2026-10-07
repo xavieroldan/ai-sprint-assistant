@@ -1,0 +1,28 @@
+# Copy to .github/workflows/sprint-assistant.yml in your repository
+# and add the ANTHROPIC_API_KEY repository secret.
+name: AI Sprint Assistant
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+
+concurrency:
+  group: sprint-assistant-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Review pull request
+        uses: xavieroldan/ai-sprint-assistant@v0.1.0
+        with:
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # fail-below-dod: "0.6"   # optional quality gate
